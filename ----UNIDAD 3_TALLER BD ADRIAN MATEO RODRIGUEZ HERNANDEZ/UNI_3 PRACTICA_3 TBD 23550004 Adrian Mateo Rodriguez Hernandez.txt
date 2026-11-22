@@ -1,0 +1,182 @@
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 23
+Server version: 8.0.46 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sakila_nueva       |
+| sys                |
+| taller_bd_uni_1    |
+| taller_bd_uni_2    |
+| taller_bd_uni_3    |
+| tutorial           |
++--------------------+
+9 rows in set (0.00 sec)
+
+mysql> use  taller_bd_uni_3;
+Database changed
+mysql> CREATE TABLE IF NOT EXISTS ciudad (
+    ->     city_id INT PRIMARY KEY,
+    ->     city VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> INSERT IGNORE INTO ciudad (city_id, city)
+    -> SELECT city_id, city FROM sakila_nueva.city;
+Query OK, 600 rows affected (0.04 sec)
+Records: 600  Duplicates: 0  Warnings: 0
+
+mysql> DELIMITER $$
+mysql> CREATE FUNCTION sumatoria_loop(numero INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE sumatoria INT DEFAULT 0;
+    ->     DECLARE cont INT DEFAULT 1;
+    ->
+    ->     miciclo: LOOP
+    ->         IF cont > numero THEN
+    ->             LEAVE miciclo;
+    ->         END IF;
+    ->         SET sumatoria = sumatoria + cont;
+    ->         SET cont = cont + 1;
+    ->     END LOOP miciclo;
+    ->
+    ->     RETURN sumatoria;
+    -> END$$
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELIMITER ;
+mysql> USE taller_bd_uni_3;
+Database changed
+mysql>
+mysql> -- 1. Verificar que existan las 5 funciones y el procedimiento
+mysql> SHOW FUNCTION STATUS WHERE Db = 'taller_bd_uni_3';
++-----------------+-------------------+----------+----------------+---------------------+---------------------+---------------+---------+----------------------+----------------------+--------------------+
+| Db              | Name              | Type     | Definer        | Modified            | Created             | Security_type | Comment | character_set_client | collation_connection | Database Collation |
++-----------------+-------------------+----------+----------------+---------------------+---------------------+---------------+---------+----------------------+----------------------+--------------------+
+| taller_bd_uni_3 | comparar_valores  | FUNCTION | root@localhost | 2026-11-22 15:14:15 | 2026-11-22 15:14:15 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | dia_semana        | FUNCTION | root@localhost | 2026-11-22 15:26:09 | 2026-11-22 15:26:09 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | es_par            | FUNCTION | root@localhost | 2026-11-22 15:25:05 | 2026-11-22 15:25:05 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | generar_id_ciudad | FUNCTION | root@localhost | 2026-11-22 15:46:39 | 2026-11-22 15:46:39 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | hola              | FUNCTION | root@localhost | 2026-11-22 14:57:37 | 2026-11-22 14:57:37 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | insertar_ciudad   | FUNCTION | root@localhost | 2026-11-22 15:46:12 | 2026-11-22 15:46:12 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | mostar_mensaje    | FUNCTION | root@localhost | 2026-11-22 15:03:44 | 2026-11-22 15:03:44 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | sumatoria_loop    | FUNCTION | root@localhost | 2026-11-22 15:45:12 | 2026-11-22 15:45:12 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | sumatoria_repeat  | FUNCTION | root@localhost | 2026-11-22 15:45:56 | 2026-11-22 15:45:56 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
+| taller_bd_uni_3 | sumatoria_while   | FUNCTION | root@localhost | 2026-11-22 15:45:34 | 2026-11-22 15:45:34 | DEFINER      |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
++-----------------+-------------------+----------+----------------+---------------------+---------------------+---------------+---------+----------------------+----------------------+--------------------+
+10 rows in set (0.00 sec)
+
+mysql> SHOW PROCEDURE STATUS WHERE Db = 'taller_bd_uni_3';
++-----------------+-----------------+-----------+----------------+---------------------+---------------------+---------------+---------+----------------------+----------------------+--------------------+
+| Db              | Name            | Type      | Definer        | Modified            | Created             | Security_type | Comment | character_set_client | collation_connection | Database Collation |
++-----------------+-----------------+-----------+----------------+---------------------+---------------------+---------------+---------+----------------------+----------------------+--------------------+
+| taller_bd_uni_3 | contar_ciudades | PROCEDURE | root@localhost | 2026-11-22 15:46:28 | 2026-11-22 15:46:28 | DEFINER     |         | utf8mb4              | utf8mb4_0900_ai_ci   | utf8mb4_0900_ai_ci |
++-----------------+-----------------+-----------+----------------+---------------------+---------------------+---------------+---------+----------------------+----------------------+--------------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- 2. Probar los tres ciclos de sumatoria (con 5 debe dar 15 en los tres)
+mysql> SELECT
+    ->     sumatoria_loop(5) AS con_loop,
+    ->     sumatoria_while(5) AS con_while,
+    ->     sumatoria_repeat(5) AS con_repeat;
++----------+-----------+------------+
+| con_loop | con_while | con_repeat |
++----------+-----------+------------+
+|       15 |        15 |         15 |
++----------+-----------+------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- 3. Revisar extremos actuales de city_id y el siguiente ID disponible
+mysql> SELECT city_id FROM ciudad ORDER BY city_id ASC LIMIT 1;
++---------+
+| city_id |
++---------+
+|       1 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT city_id FROM ciudad ORDER BY city_id DESC LIMIT 1;
++---------+
+| city_id |
++---------+
+|     600 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT MAX(city_id) AS id_maximo_actual FROM ciudad;
++------------------+
+| id_maximo_actual |
++------------------+
+|              600 |
++------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT generar_id_ciudad() AS siguiente_id_sugerido;
++-----------------------+
+| siguiente_id_sugerido |
++-----------------------+
+|                   601 |
++-----------------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- 4. Insertar ciudades de prueba usando la función (devuelve 1 si inserta bien)
+mysql> SELECT insertar_ciudad(601, 'Aldama') AS resultado_aldama;
++------------------+
+| resultado_aldama |
++------------------+
+|                1 |
++------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT insertar_ciudad(602, 'Camargo') AS resultado_camargo;
++-------------------+
+| resultado_camargo |
++-------------------+
+|                 1 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- 5. Ejecutar el procedimiento con variable de sesión @cont y consultarla
+mysql> CALL contar_ciudades(@cont);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT @cont AS total_ciudades;
++----------------+
+| total_ciudades |
++----------------+
+|            602 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- 6. Comprobar los últimos registros agregados
+mysql> SELECT city_id, city FROM ciudad WHERE city_id >= 600 ORDER BY city_id;
++---------+------------+
+| city_id | city       |
++---------+------------+
+|     600 | Ziguinchor |
+|     601 | Aldama     |
+|     602 | Camargo    |
++---------+------------+
+3 rows in set (0.00 sec)
+
+mysql>
